@@ -1,4 +1,4 @@
-(function()
+require(["util"], function(util)
 {
 	"use strict";
 
@@ -15,8 +15,5 @@
 		console.log(event.data);
 	};
 
-	window.onload=function()
-	{
-		alert("hallota");
-	}
+	util.test();
 })();
