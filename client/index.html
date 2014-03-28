@@ -1,20 +1,9 @@
+<!DOCTYPE html>
 <html>
-<body>
-<script>
-
-var ws = new WebSocket("ws://localhost:8000");
-
-ws.onopen = function(event)
-{
-    console.log("Connected!");
-    ws.send("Halloo!");
-}
-
-ws.onmessage = function(event)
-{
-    console.log(event.data);
-}
-
-</script>
-</body>
+	<head>
+		<meta charset="UTF-8"/>
+		<script type="text/javascript" src="main.js"></script>
+	</head>
+	<body>
+	</body>
 </html>
