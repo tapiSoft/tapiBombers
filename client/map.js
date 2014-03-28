@@ -21,7 +21,7 @@ define(["imageloader"], function(imageloader)
             {
                 for(var j=0; j<mapMatrix[i].length; ++j)
                 {
-                    ctx.drawImage(mapMatrix[i][j], i*20, j*20, 20, 20);
+                    ctx.drawImage(mapMatrix[i][j], j*20, i*20, 20, 20);
                 }
             }
         }
