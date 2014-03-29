@@ -1,0 +1,25 @@
+body {
+    background-image:url('http://www.cs.helsinki.fi/u/ilkkahak/img/crate.png');
+
+}
+#content {
+
+    background-color: saddlebrown;
+    margin-left: auto;
+    margin-right: auto;
+    height: 800px;
+    width: 1024px;
+}
+
+#header {
+    background-color: darkred;
+    margin-top: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 60px;
+    width: 1024px;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 200%;
+    text-align: center;
+    text-shadow: 5px 5px 5px grey;
+}

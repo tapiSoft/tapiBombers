@@ -9,7 +9,7 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
     window.requestAnimFrame = (function(callback) {
         return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
         function(callback) {
-            window.setTimeout(callback, 1000 / 60);
+            alert("This should not happen.");
         };
     })();
 
@@ -55,30 +55,33 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
         function draw()
         {
             map.draw(ctx, entities);
-            window.requestAnimFrame(draw);
+            status.redraw();
+            setTimeout(function()
+            {
+                window.requestAnimFrame(draw);
+            }, 1000/30);
         }
 
 
         var ws = new WebSocket("ws://192.168.1.191:8000");
         ws.onopen = function(event)
         {
-            console.log("Connected!");
+            //console.log("Connected!");
             var msg = msgpack.encode({type: 'chat', message: "Halloo!"});
-            console.log("Sending message " + msg);
+            //console.log("Sending message " + msg);
             ws.send(msg);
             ws.send(msgpack.encode({type: 'move', xdir: '1', ydir: '1000' }));
         };
 
         var handleTapiMessage = function(message)
         {
-            console.log("Received tapimessage of type: " + message.type);
+            //console.log("Received tapimessage of type: " + message.type);
             switch(message.type)
             {
                 case 'chat':
                     if(message.sender === undefined)
                         message.sender = "[SERVER]";
                     status.addMessage(message);
-                    status.redraw();
                     break;
                 case 'move':
                     entities[message.entityid].x = message.x;
@@ -115,7 +118,7 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
             fileReader.onload = function() {
                     arrayBuffer = this.result;
                     var msg = msgpack.decode(arrayBuffer);
-                    console.log("Received message : " + msg);
+                    //console.log("Received message : " + msg);
                     handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
@@ -146,6 +149,6 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
             ws.send(msgpack.encode({type: 'move', xdir: xDir, ydir: yDir }));
         };
 
-        draw();
+        window.requestAnimFrame(draw);
     });
 });
