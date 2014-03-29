@@ -6,20 +6,6 @@ define(["imageloader"], function(imageloader)
     {
         var mapMatrix = [];
 
-        for(var i=0; i<36; ++i)
-        {
-            mapMatrix[i] = [];
-            for(var j=0; j<64; ++j)
-            {
-                var img = imageloader.getImage((Math.floor(Math.random() * 2) === 0) ? "crate" : "sand");
-                var canvas = document.createElement("canvas");
-                canvas.width=20;
-                canvas.height=20;
-                canvas.getContext("2d").drawImage(img, 0, 0, 20, 20);
-                mapMatrix[i][j] = canvas;
-            }
-        }
-
         this.draw=function(ctx, entities)
         {
             for(var i=0; i<mapMatrix.length; ++i)
@@ -36,5 +22,22 @@ define(["imageloader"], function(imageloader)
                 ctx.drawImage(img, Math.round(e.x*20), Math.round(e.y*20), 20, 20);
             }
         };
+
+        this.initializeMap = function(width, height)
+        {
+            mapMatrix = [];
+            for(var i = 0; i < height; ++i)
+            {
+                var tmp = [];
+                for(var j = 0; j < width; ++j)
+                    tmp.push(0);
+                mapMatrix.push(tmp);
+            }
+        }
+
+        this.setTile = function(x, y, model, durability)
+        {
+            mapMatrix[y][x] = imageloader.getImage(model);
+        }
     };
 });

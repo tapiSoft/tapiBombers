@@ -99,6 +99,17 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                         entities[e.id] = new Entity(e.x, e.y, e.model);
                     }
                     break;
+                case 'tiles':
+                    var width = message.tiles.length;
+                    var height = message.tiles[0].length;
+                    map.initializeMap(width, height);
+                    for(var x = 0; x < width; ++x)
+                        for(var y = 0; y < height; ++y)
+                        {
+                            var t = message.tiles[x][y];
+                            map.setTile(x,y,t.model)
+                        }
+                    break;
                 case 'diff':
                     for(var i in message.diff)
                     {
@@ -107,6 +118,11 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                         entities[e.id].y = e.y
                     }
                     break;
+                default:
+                    {
+                        console.log("WE ARE FUCKAD, SIMPLY.");
+                        console.log(message.type);
+                    }
             }
 
         };

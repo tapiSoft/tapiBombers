@@ -115,11 +115,55 @@ class Entity:
     def serializePosition(self):
         return {'x': self.x, 'y': self.y, 'id': self.entityid}
 
+class Bomb(Entity):
+    def __init__(self, fusetime, entityid, strength, game, model):
+        Entity.__init__(self, entityid, game, model)
+        self.fusetime = fusetime
+        self.strength = strength
+
+    def tick(self, dt):
+        self.fusetime -= dt
+        if self.fusetime <= 0:
+            self.explode();
+
+class CircularBomb(Bomb):
+
+    def __init__(self, fusetime, entityid, strength, radius, game, model):
+        Bomb.__init__(self, fusetime, entityid, strength, game, model)
+        self.radius = radius
+
+    def explode(self):
+        e = self.game.entities[self.entityid]
+        for x in range(-self.radius, self.radius):
+            for y in range(-self.radius, self.radius):
+                if math.sqrt(x**2 + y**2) < self.radius:
+                    self.game.explode(e.x + x, e.y + y)
+
+class RectangularBomb(Bomb):
+    def __init__(self, fusetime, entityid, strength, radius, game, model):
+        Bomb.__init__(self, fusetime, entityid, strength, game, model)
+        self.radius = radius
+
+    def explode(self):
+        e = self.game.entities[self.entityid]
+        for x in range(-self.radius, self.radius):
+            for y in range(-self.radius, self.radius):
+                self.game.explode(e.x + x, e.y + y)
+
+class Tile:
+    def __init__(self, model, durability):
+        self.model = model;
+        self.durability = durability;
+
+    def serialize(self):
+        return self.__dict__
+#        return {'model': self.model, 'durability': self.durability}
+
 class Game:
     def __init__(self):
         self.mapheight=36
         self.mapwidth=64
-        self.tiles = [[0 for x in xrange(self.mapheight)] for x in xrange(self.mapwidth)]
+        self.tiles = [[Tile('sand', 0) for x in xrange(self.mapheight)] for x in xrange(self.mapwidth)]
         self.entities = {}
         self.inmessages = Queue()
         self.outmessages = Queue()
@@ -131,6 +175,12 @@ class Game:
         self.stop = False
         self.gamethread.start()
         self.server.serve_forever()
+
+    def explode(self, x, y, strength):
+        self.tiles[x][y].durability -= strength 
+        if self.tiles[x][y].durability <= 0:
+            self.tiles[x][y].model = 'sand'
+        self.diffpacket['diff']['tiles'].append(self.tiles[x][y].serialize())
 
     def signal_handler(self, signal, frame):
         print 'handlaan signaalia'
@@ -172,6 +222,7 @@ class Game:
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
             message['player'].ws.send(self.packer.pack({'type': 'entities', 'entities': [ self.entities[e].serialize() for e in self.entities ] }), True)
+            message['player'].ws.send(self.packer.pack({'type': 'tiles', 'tiles': [[self.tiles[x][y].serialize() for y in xrange(self.mapheight)] for x in xrange(self.mapwidth)]}), True)
 #            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
             self.server.BroadCastMessage({'type': 'newentity', 'entity': self.entities[eid].serialize()})
             print 'Current entities: ' + str(len(self.entities))
