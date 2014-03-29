@@ -6,6 +6,8 @@ define(function()
 {
     "use strict";
 
-    var positionX;
-    var positionY;
+    return function Entity()
+    {
+
+    }
 });

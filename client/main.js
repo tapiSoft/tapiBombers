@@ -46,6 +46,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
     {
         var map = new Map();
         var chatmessages = [];
+        var entities = {};
 
         var ws = new WebSocket("ws://192.168.1.191:8000");
         ws.onopen = function(event)
@@ -77,6 +78,12 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     chatmessages.push(message.sender + ": " + message.message);
                     redrawChatBox();
                     break;
+                case 'move':
+                    map.movePlayerIcon(message.x, message.y);
+                    break;
+                case 'newentity':
+                    entities[message.entityid] = new Entity(message.x, message.y, message.model);
+                    break;
             }
 
         };
@@ -97,26 +104,31 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
 
         input.keyDownListeners.right=function()
         {
-            map.movePlayerIcon(0);
+            changeDirection(1,0);
             map.draw(ctx);
         }
 
         input.keyDownListeners.down=function()
         {
-            map.movePlayerIcon(1);
+            changeDirection(0,-1);
             map.draw(ctx);
         }
 
         input.keyDownListeners.left=function()
         {
-            map.movePlayerIcon(2);
+            changeDirection(-1,0);
             map.draw(ctx);
         }
 
         input.keyDownListeners.up=function()
         {
-            map.movePlayerIcon(3);
+            changeDirection(0,1);
             map.draw(ctx);
+        }
+
+        var changeDirection=function(xDir, yDir)
+        {
+            ws.send(msgpack.encode({type: 'move', xdir: xDir, ydir: yDir }));
         }
 
         map.draw(ctx);

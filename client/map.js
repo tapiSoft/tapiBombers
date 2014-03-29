@@ -31,30 +31,12 @@ define(["imageloader"], function(imageloader)
             }
         };
 
-        this.insert=function(posX, posY, insertValue)
-        {
-            mapMatrix[posX][posY] = insertValue;
-        }
-
-        this.movePlayerIcon=function(direction)
+        this.movePlayerIcon=function(x,y)
         {
             mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("sand");
-            switch(direction)
-            {
-                case 0:
-                    playerPos[1]+= 1;
-                    break;
-                case 1:
-                    playerPos[0] += 1;
-                    break;
-                case 2:
-                    playerPos[1] -= 1;
-                    break;
-                case 3:
-                    playerPos[0] -= 1;
-                    break;
-            }
-            mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("player");
+            playerPos[0] = x;
+            playerPos[1] = y;
+            mapMatrix[x][y] = imageloader.getImage("player");
         }
     };
 });
