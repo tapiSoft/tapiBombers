@@ -1,32 +1,35 @@
-(function()
+require(["imageloader", "tile", "map"], function(imageloader, Tile, Map)
 {
 	"use strict";
 
-	var ws = new WebSocket("ws://localhost:8000");
+    var canvas = document.getElementById("gameCanvas");
+    var ctx = canvas.getContext("2d");
+    imageloader.loadImages(function()
+    {
+        var map = new Map();
 
-	ws.onopen = function(event)
-	{
-		console.log("Connected!");
-        var msg = msgpack.encode({type: 'chat', message: "Halloo!"});
-        console.log("Sending message " + msg);
-		ws.send(msg);
-	};
-
-	ws.onmessage = function(event)
-	{
-        var arrayBuffer;
-        var fileReader = new FileReader();
-        fileReader.onload = function() {
-                arrayBuffer = this.result;
-                var msg = msgpack.decode(arrayBuffer);
-                console.log("Received message : " + msg);
-                console.log("chat message : " + msg.message);
+        var ws = new WebSocket("ws://localhost:8000");
+        ws.onopen = function(event)
+        {
+            console.log("Connected!");
+            var msg = msgpack.encode({type: 'chat', message: "Halloo!"});
+            console.log("Sending message " + msg);
+            ws.send(msg);
         };
-        fileReader.readAsArrayBuffer(event.data);
-	};
 
-	window.onload=function()
-	{
-		alert("hallota");
-	}
-})();
+        ws.onmessage = function(event)
+        {
+            var arrayBuffer;
+            var fileReader = new FileReader();
+            fileReader.onload = function() {
+                    arrayBuffer = this.result;
+                    var msg = msgpack.decode(arrayBuffer);
+                    console.log("Received message : " + msg);
+                    console.log("chat message : " + msg.message);
+            };
+            fileReader.readAsArrayBuffer(event.data);
+        };
+
+        map.draw(ctx);
+    });
+});
