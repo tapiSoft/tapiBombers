@@ -107,25 +107,25 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
         input.keyDownListeners.right=function()
         {
             changeDirection(1,0);
-            map.draw(ctx);
+            map.draw(ctx, entities);
         }
 
         input.keyDownListeners.down=function()
         {
             changeDirection(0,-1);
-            map.draw(ctx);
+            map.draw(ctx, entities);
         }
 
         input.keyDownListeners.left=function()
         {
             changeDirection(-1,0);
-            map.draw(ctx);
+            map.draw(ctx, entities);
         }
 
         input.keyDownListeners.up=function()
         {
             changeDirection(0,1);
-            map.draw(ctx);
+            map.draw(ctx, entities);
         }
 
         var changeDirection=function(xDir, yDir)
@@ -133,6 +133,6 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
             ws.send(msgpack.encode({type: 'move', xdir: xDir, ydir: yDir }));
         }
 
-        map.draw(ctx);
+        map.draw(ctx, entities);
     });
 });

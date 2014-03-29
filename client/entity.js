@@ -2,7 +2,7 @@
  * Created by Simo on 28-Mar-14.
  */
 
-define(function()
+define(function(posX, posY, name)
 {
     "use strict";
 
