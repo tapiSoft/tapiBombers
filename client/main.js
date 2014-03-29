@@ -18,6 +18,7 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
             var msg = msgpack.encode({type: 'chat', message: "Halloo!"});
             console.log("Sending message " + msg);
             ws.send(msg);
+            ws.send(msgpack.encode({type: 'move', xdir: '1', ydir: '1000' }))
         };
 
         ws.onmessage = function(event)

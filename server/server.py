@@ -1,7 +1,11 @@
 from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
-from Queue import Queue
+from Queue import Queue, Empty
 import msgpack
-
+import time
+import util
+import threading
+import signal
+import sys
 
 class PlayerSocket(WebSocketApplication):
     def __init__(self, ws):
@@ -35,15 +39,13 @@ class Server(WebSocketServer):
         self.packer = msgpack.Packer()
         self.unpacker = msgpack.Unpacker()
         self.game = game
-        self.serve_forever()
-#        self.inmessages = Queue()
-#        self.outmessages = Queue()
 
     def HandleMessage(self, message, sender):
         if message['type'] == 'chat':
             self.HandleChatMessage(message['message'], sender.playername)
         else:
-            print 'Unknown message type encountered : ' + str(message)
+            message['player'] = sender
+            self.game.inmessages.put(message)
 
     def HandleChatMessage(self, message, sender):
         self.BroadCastMessage({'type': 'chat', 'message': message, 'sender': sender})
@@ -52,8 +54,9 @@ class Server(WebSocketServer):
     def NewConnection(self, client):
         client.playerid = self.nextid
         client.playername = 'Jorma'
-        self.players[self.nextid] = (client)
+        self.players[self.nextid] = client
         self.nextid += 1
+        self.game.inmessages.put({'type': 'connect', 'player': client})
         self.BroadCastMessage({'type': 'chat', 'message': client.playername + ' connected.'})
 
     def CloseConnection(self, client):
@@ -71,7 +74,26 @@ class Server(WebSocketServer):
                 disconnectedplayers.append(p)
         for p in disconnectedplayers:
             self.CloseConnection(self.players[p])
-        
+
+class Entity:
+    def __init__(self, eid):
+        self.entityid = eid
+        self.x = 0
+        self.y = 0
+        self.xdir = 0
+        self.ydir = 0
+        self.moveCooldown = 0.0
+
+    def tick(self, dt):
+        if self.moveCooldown > 0.0:
+            self.moveCooldown -= dt
+
+        if self.moveCooldown <= 0.0:
+            self.x += self.xdir
+            self.y += self.ydir
+            print 'Position is now : ' + str(self.x) + "," + str(self.y)
+            self.moveCooldown = 1.0
+
 class Game:
     def __init__(self):
         self.mapheight=100
@@ -80,30 +102,79 @@ class Game:
         self.entities = {}
         self.inmessages = Queue()
         self.outmessages = Queue()
-        self.server = Server(self)
         self.nextentityid = 0
+        self.server = Server(self)
+        signal.signal(signal.SIGINT, self.signal_handler)
+        self.gamethread = threading.Thread(target = self.run)
+        self.stop = False
+        self.gamethread.start()
+        self.server.serve_forever()
+
+    def signal_handler(self, signal, frame):
+        print 'handlaan signaalia'
+        self.stop = True
+        self.gamethread.join
+        self.server.stop()
 
     def tick(self, dt):
         try:
             while 1:
                 msg = self.inmessages.get_nowait()
-                self.HandleMessage(msg);
+                self.handleMessage(msg);
         except Empty:
             pass
 
+        for e in self.entities:
+            self.entities[e].tick(dt)
+
+
+    def run(self):
+        self.lastsimtime = util.clock()
+        while not self.stop:
+            t = util.clock()
+            dt = t - self.lastsimtime
+            self.lastsimtime = t
+            self.tick(dt)
+
+            time.sleep(0.001)
+
     def handleMessage(self, message):
+        print "handling message: " + str(message)
         t = message['type']
         if t == 'move':
-            pass
+            self.handlePlayerInput(message)
         elif t == 'connect':
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
         elif t == 'disconnect':
             del self.entities[message['player'].entityid]
+        else:
+            print 'Unknown packet type: ' + str(message)
 
+
+    def handlePlayerInput(self, message):
+        xd = message['xdir']
+        yd = message['ydir']
+        ent = self.entities[message['player'].entityid]
+        if xd != 0:
+            if xd > 0:
+                ent.xdir = 1
+                ent.ydir = 0
+            else:
+                ent.xdir = -1
+                ent.ydir = 0
+        elif yd != 0:
+            if yd > 0:
+                ent.xdir = 0
+                ent.ydir = 1
+            else:
+                ent.xdir = 0
+                ent.ydir = -1 
+                
     def CreatePlayerEntity(self):
         eid = self.nextentityid
         self.nextentityid += 1
+        self.entities[eid] = Entity(eid)
         return eid
 
 
