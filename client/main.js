@@ -6,6 +6,14 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
     var ctx = canvas.getContext("2d");
 	var status = new StatusWindow();
 
+    window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+        function(callback) {
+            window.setTimeout(callback, 1000 / 60);
+        };
+    })();
+
+
     domready(function() { fullscreenify(canvas); }, false);
     /*
      * fullscreenify()
@@ -44,6 +52,13 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
         var map = new Map();
         var entities = {};
 
+        function draw()
+        {
+            map.draw(ctx, entities);
+            window.requestAnimFrame(draw);
+        }
+
+
         var ws = new WebSocket("ws://192.168.1.191:8000");
         ws.onopen = function(event)
         {
@@ -68,7 +83,6 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                 case 'move':
                     entities[message.entityid].x = message.x;
                     entities[message.entityid].y = message.y;
-                    map.draw(ctx, entities);
                     break;
                 case 'newentity':
                     var e = message.entity;
@@ -102,28 +116,28 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
         input.keyDownListeners.right=function()
         {
             changeDirection(1,0);
-        }
+        };
 
         input.keyDownListeners.down=function()
         {
             changeDirection(0,1);
-        }
+        };
 
         input.keyDownListeners.left=function()
         {
             changeDirection(-1,0);
-        }
+        };
 
         input.keyDownListeners.up=function()
         {
             changeDirection(0,-1);
-        }
+        };
 
         var changeDirection=function(xDir, yDir)
         {
             ws.send(msgpack.encode({type: 'move', xdir: xDir, ydir: yDir }));
-        }
+        };
 
-        map.draw(ctx, entities);
+        draw();
     });
 });
