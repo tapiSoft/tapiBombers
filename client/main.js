@@ -6,15 +6,16 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
     var ctx = canvas.getContext("2d");
     var chatcanvas = document.getElementById("chatCanvas");
     var chatctx = chatcanvas.getContext("2d");
-    chatctx.fillstyle = "blue"
-    chatctx.font = "bold 16px Arial"
+    chatctx.fillstyle = "blue";
+    chatctx.font = "bold 16px Arial";
 
     input.initInput();
 
     imageloader.loadImages(function()
     {
         var map = new Map();
-        var chatmessages = []
+        var chatmessages = [];
+        var entities = {};
 
         var ws = new WebSocket("ws://localhost:8000");
         ws.onopen = function(event)
@@ -28,13 +29,13 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
 
         var redrawChatBox = function()
         {
-            chatctx.clearRect(0, 0, chatcanvas.width, chatcanvas.height)
+            chatctx.clearRect(0, 0, chatcanvas.width, chatcanvas.height);
             for(var i = 1; i <= chatmessages.length; ++i)
             {
                 chatctx.fillText(chatmessages[chatmessages.length-i], 0, chatcanvas.height-16*i);
             }
 
-        }
+        };
 
         var handleTapiMessage = function(message)
         {
@@ -42,9 +43,15 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
             {
                 case 'chat':
                     if(message.sender == undefined)
-                        message.sender = "[SERVER]"
+                        message.sender = "[SERVER]";
                     chatmessages.push(message.sender + ": " + message.message);
                     redrawChatBox();
+                    break;
+                case 'move':
+                    map.movePlayerIcon(message.x, message.y);
+                    break;
+                case 'newentity':
+                    entities[message.entityid] = new Entity(message.x, message.y, message.model);
                     break;
             }
 
@@ -66,26 +73,31 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
 
         input.keyDownListeners.right=function()
         {
-            map.movePlayerIcon(0);
+            changeDirection(1,0);
             map.draw(ctx);
         }
 
         input.keyDownListeners.down=function()
         {
-            map.movePlayerIcon(1);
+            changeDirection(0,-1);
             map.draw(ctx);
         }
 
         input.keyDownListeners.left=function()
         {
-            map.movePlayerIcon(2);
+            changeDirection(-1,0);
             map.draw(ctx);
         }
 
         input.keyDownListeners.up=function()
         {
-            map.movePlayerIcon(3);
+            changeDirection(0,1);
             map.draw(ctx);
+        }
+
+        var changeDirection=function(xDir, yDir)
+        {
+            ws.send(msgpack.encode({type: 'move', xdir: xDir, ydir: yDir }));
         }
 
         map.draw(ctx);
