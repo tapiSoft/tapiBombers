@@ -76,7 +76,7 @@ class Server(WebSocketServer):
             self.CloseConnection(self.players[p])
 
 class Entity:
-    def __init__(self, eid, game):
+    def __init__(self, eid, game, model):
         self.entityid = eid
         self.x = 0
         self.y = 0
@@ -84,6 +84,7 @@ class Entity:
         self.ydir = 0
         self.moveCooldown = 0.0
         self.game = game
+        self.model = model
 
     def tick(self, dt):
         if self.moveCooldown > 0.0:
@@ -94,8 +95,11 @@ class Entity:
             self.y += self.ydir
             print 'Position is now : ' + str(self.x) + "," + str(self.y)
 #            game.outmessages.put({'type': 'move', 'x':, self.x, 'y': self.y})
-            self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y})
+            self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
             self.moveCooldown = 0.5
+
+    def serialize(self):
+        return {'x': self.x, 'y': self.y, 'model': self.model, 'id': self.entityid}
 
 class Game:
     def __init__(self):
@@ -106,6 +110,7 @@ class Game:
         self.inmessages = Queue()
         self.outmessages = Queue()
         self.nextentityid = 0
+        self.packer = msgpack.Packer()
         self.server = Server(self)
         signal.signal(signal.SIGINT, self.signal_handler)
         self.gamethread = threading.Thread(target = self.run)
@@ -149,8 +154,9 @@ class Game:
         elif t == 'connect':
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
+            message['player'].ws.send(self.packer.pack({'entities': [ self.entities[e].serialize() for e in self.entities ] }), True)
 #            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
-            self.server.BroadCastMessage({'type': 'newentity', 'x': self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player', 'entityid': eid})
+            self.server.BroadCastMessage({'type': 'newentity', 'entity': self.entities[eid].serialize()})
             print 'Current entities: ' + str(len(self.entities))
         elif t == 'disconnect':
             eid = message['player'].entityid
@@ -190,7 +196,7 @@ class Game:
     def CreatePlayerEntity(self):
         eid = self.nextentityid
         self.nextentityid += 1
-        self.entities[eid] = Entity(eid, self)
+        self.entities[eid] = Entity(eid, self, 'player')
         return eid
 
 

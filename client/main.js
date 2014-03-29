@@ -1,4 +1,4 @@
-require(["domReady", "imageloader", "tile", "input", "map"], function(domready, imageloader, Tile, input, Map)
+require(["domReady", "imageloader", "tile", "input", "map", "entity"], function(domready, imageloader, Tile, input, Map, Entity)
 {
 	"use strict";
 
@@ -79,11 +79,21 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     redrawChatBox();
                     break;
                 case 'move':
-                    map.movePlayerIcon(message.x, message.y);
+                    entities[message.entityid].x = message.x;
+                    entities[message.entityid].y = message.y;
                     map.draw(ctx, entities);
                     break;
                 case 'newentity':
-//                    entities[message.entityid] = new Entity(message.x, message.y, message.model);
+                    var e = message.entity
+                    entities[e.id] = new Entity(e.x, e.y, e.model);
+                    break;
+                case 'entities':
+                    entities = {}
+                    for(i in message.entities)
+                    {
+                        var e = message.entities[i]
+                        entities[e.id] = new Entity(e.x, e.y, e.model);
+                    }
                     break;
             }
 
