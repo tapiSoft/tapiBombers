@@ -9,36 +9,36 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
     chatctx.fillstyle = "blue";
     chatctx.font = "bold 16px Arial";
 
-	domready(function() { fullscreenify(canvas); }, false);
-	/*
-	 * fullscreenify()
-	 * Stretch canvas to size of window.
-	 *
-	 * Zachary Johnson
-	 * http://www.zachstronaut.com/
-	 *
-	 * See also: https://gist.github.com/1178522
-	 */
-	function fullscreenify(canvas) {
-		var style = canvas.getAttribute('style') || '';
-		window.addEventListener('resize', function () {resize(canvas);}, false);
+    domready(function() { fullscreenify(canvas); }, false);
+    /*
+     * fullscreenify()
+     * Stretch canvas to size of window.
+     *
+     * Zachary Johnson
+     * http://www.zachstronaut.com/
+     *
+     * See also: https://gist.github.com/1178522
+     */
+    function fullscreenify(canvas) {
+        var style = canvas.getAttribute('style') || '';
+        window.addEventListener('resize', function () {resize(canvas);}, false);
 
-		resize(canvas);
+        resize(canvas);
 
-		function resize(canvas) {
-			var scale = {x: 1, y: 1};
-			scale.x = window.innerWidth / canvas.width;
-			scale.y = (window.innerHeight - 120) / canvas.height;
-			if (scale.x < 1 || scale.y < 1) {
-				scale = '1, 1';
-			} else if (scale.x < scale.y) {
-				scale = scale.x + ', ' + scale.x;
-			} else {
-				scale = scale.y + ', ' + scale.y;
-			}
-			canvas.setAttribute('style', style + ' ' + '-ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
-		}
-	}
+        function resize(canvas) {
+            var scale = {x: 1, y: 1};
+            scale.x = window.innerWidth / canvas.width;
+            scale.y = (window.innerHeight - 120) / canvas.height;
+            if (scale.x < 1 || scale.y < 1) {
+                scale = '1, 1';
+            } else if (scale.x < scale.y) {
+                scale = scale.x + ', ' + scale.x;
+            } else {
+                scale = scale.y + ', ' + scale.y;
+            }
+            canvas.setAttribute('style', style + ' ' + '-ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
+        }
+    }
 
     input.initInput();
 
