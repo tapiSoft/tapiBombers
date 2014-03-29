@@ -1,9 +1,12 @@
-require(["imageloader", "tile", "map"], function(imageloader, Tile, Map)
+require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, input, Map)
 {
 	"use strict";
 
     var canvas = document.getElementById("gameCanvas");
     var ctx = canvas.getContext("2d");
+
+    input.initInput();
+
     imageloader.loadImages(function()
     {
         var map = new Map();
