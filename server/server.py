@@ -12,6 +12,7 @@ class PlayerSocket(WebSocketApplication):
         WebSocketApplication.__init__(self, ws)
         self.unpacker = msgpack.Unpacker()
         self.packer = msgpack.Packer()
+        self.bad = False
 
     def on_open(self):
         print "Connection opened!"
@@ -29,6 +30,15 @@ class PlayerSocket(WebSocketApplication):
     def on_close(self, reason):
         print "Connection closed : " + str(reason)
         self.ws.handler.server.CloseConnection(self)
+
+    def SendMessage(self, message):
+        if not self.bad:
+            try:
+                self.ws.send(message, True)
+            except:
+                self.ws.handler.server.CloseConnection(self)
+                print 'Closing socket because of error.'
+
         
 
 class Server(WebSocketServer):
@@ -59,7 +69,10 @@ class Server(WebSocketServer):
         self.BroadCastMessage({'type': 'chat', 'message': client.playername + ' connected.'})
 
     def CloseConnection(self, client):
-        del self.players[client.playerid]
+        try:
+            del self.players[client.playerid]
+        except:
+            pass
         self.game.inmessages.put({'type': 'disconnect', 'player': client})
         self.BroadCastMessage({'type': 'chat', 'message': client.playername + ' disconnected.'})
 
@@ -221,14 +234,27 @@ class Game:
         elif t == 'connect':
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
-            message['player'].ws.send(self.packer.pack({'type': 'entities', 'entities': [ self.entities[e].serialize() for e in self.entities ] }), True)
-            message['player'].ws.send(self.packer.pack({'type': 'tiles', 'tiles': [[self.tiles[x][y].serialize() for y in xrange(self.mapheight)] for x in xrange(self.mapwidth)]}), True)
+            message['player'].SendMessage(self.packer.pack({'type': 'entities', 'entities': [ self.entities[e].serialize() for e in self.entities ] }))
+
+            serializedtiles = []
+            for x in xrange(self.mapwidth):
+                tmp = []
+                for y in xrange(self.mapheight):
+                    tmp.append(self.tiles[x][y].serialize())
+                serializedtiles.append(tmp)
+            tilemessage = {'type': 'tiles', 'tiles': serializedtiles}
+#            print 'Sending TrolloMEsssage: ' + str(tilemessage)
+
+            message['player'].SendMessage(self.packer.pack(tilemessage))
 #            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
             self.server.BroadCastMessage({'type': 'newentity', 'entity': self.entities[eid].serialize()})
             print 'Current entities: ' + str(len(self.entities))
         elif t == 'disconnect':
             eid = message['player'].entityid
-            del self.entities[eid]
+            try:
+                del self.entities[eid]
+            except:
+                pass
             self.server.BroadCastMessage({'type': 'deleteentity', 'entityid': eid})
         else:
             print 'Unknown packet type: ' + str(message)
@@ -238,26 +264,26 @@ class Game:
         return ret
 
     def handlePlayerInput(self, message):
-        xd = message['xdir']
-        yd = message['ydir']
-        ent = self.entities[message['player'].entityid]
-        if xd != 0:
-            if xd > 0:
-                ent.xdir = 1
-                ent.ydir = 0
-            else:
-                ent.xdir = -1
-                ent.ydir = 0
-        elif yd != 0:
-            if yd > 0:
-                ent.xdir = 0
-                ent.ydir = 1
-            else:
-                ent.xdir = 0
-                ent.ydir = -1 
-
-        print 'New xdir: ' + str(ent.xdir)
-        print 'New ydir: ' + str(ent.ydir)
+        try:
+            xd = message['xdir']
+            yd = message['ydir']
+            ent = self.entities[message['player'].entityid]
+            if xd != 0:
+                if xd > 0:
+                    ent.xdir = 1
+                    ent.ydir = 0
+                else:
+                    ent.xdir = -1
+                    ent.ydir = 0
+            elif yd != 0:
+                if yd > 0:
+                    ent.xdir = 0
+                    ent.ydir = 1
+                else:
+                    ent.xdir = 0
+                    ent.ydir = -1 
+        except:
+            pass
                 
     def CreatePlayerEntity(self):
         eid = self.nextentityid

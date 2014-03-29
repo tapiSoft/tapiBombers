@@ -114,6 +114,11 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                         entities[e.id].y = e.y
                     }
                     break;
+                case 'deleteentity':
+                    {
+                        delete entities[message.entityid];
+                        break;
+                    }
                 default:
                     {
                         console.log("WE ARE FUCKAD, SIMPLY.");
