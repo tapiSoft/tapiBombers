@@ -11,7 +11,12 @@ define(["imageloader"], function(imageloader)
             mapMatrix[i] = [];
             for(var j=0; j<64; ++j)
             {
-                mapMatrix[i][j] = imageloader.getImage((Math.floor(Math.random() * 2) === 0) ? "crate" : "sand");
+                var img = imageloader.getImage((Math.floor(Math.random() * 2) === 0) ? "crate" : "sand");
+                var canvas = document.createElement("canvas");
+                canvas.width=20;
+                canvas.height=20;
+                canvas.getContext("2d").drawImage(img, 0, 0, 20, 20);
+                mapMatrix[i][j] = canvas;
             }
         }
 
