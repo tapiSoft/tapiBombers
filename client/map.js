@@ -11,9 +11,9 @@ define(["imageloader"], function(imageloader)
             mapMatrix[i] = [];
             for(var j=0; j<64; ++j)
             {
-                mapMatrix[i][j] = imageloader.getImage("crate");
+                mapMatrix[i][j] = imageloader.getImage((Math.floor(Math.random() * 2) === 0) ? "crate" : "sand");
             }
-        };
+        }
 
         this.draw=function(ctx)
         {
@@ -24,6 +24,6 @@ define(["imageloader"], function(imageloader)
                     ctx.drawImage(mapMatrix[i][j], j*20, i*20, 20, 20);
                 }
             }
-        }
+        };
     };
 });
