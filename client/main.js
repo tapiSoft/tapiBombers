@@ -28,7 +28,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
         function resize(canvas) {
             var scale = {x: 1, y: 1};
             scale.x = window.innerWidth / canvas.width;
-            scale.y = (window.innerHeight - 120) / canvas.height;
+            scale.y = (window.innerHeight-120) / canvas.height;
             if (scale.x < 1 || scale.y < 1) {
                 scale = '1, 1';
             } else if (scale.x < scale.y) {
@@ -36,7 +36,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
             } else {
                 scale = scale.y + ', ' + scale.y;
             }
-            canvas.setAttribute('style', style + ' ' + '-ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
+            canvas.setAttribute('style', style + ' ' + '-ms-transform-origin: left top; -webkit-transform-origin: left top; -moz-transform-origin: left top; -o-transform-origin: left top; transform-origin: left top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
         }
     }
 
@@ -90,6 +90,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
 
         ws.onmessage = function(event)
         {
+			/*
             var arrayBuffer;
             var fileReader = new FileReader();
             fileReader.onload = function() {
@@ -100,6 +101,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
+			*/
         };
 
         input.keyDownListeners.right=function()
