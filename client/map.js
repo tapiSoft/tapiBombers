@@ -6,6 +6,10 @@ define(["imageloader"], function(imageloader)
     {
         var mapMatrix = [];
 
+        var playerPos = [];
+        playerPos[0] = 0;
+        playerPos[1] = 0;
+
         for(var i=0; i<36; ++i)
         {
             mapMatrix[i] = [];
@@ -14,6 +18,7 @@ define(["imageloader"], function(imageloader)
                 mapMatrix[i][j] = imageloader.getImage((Math.floor(Math.random() * 2) === 0) ? "crate" : "sand");
             }
         }
+        mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("player");
 
         this.draw=function(ctx)
         {
@@ -25,5 +30,31 @@ define(["imageloader"], function(imageloader)
                 }
             }
         };
+
+        this.insert=function(posX, posY, insertValue)
+        {
+            mapMatrix[posX][posY] = insertValue;
+        }
+
+        this.movePlayerIcon=function(direction)
+        {
+            mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("sand");
+            switch(direction)
+            {
+                case 0:
+                    playerPos[1]+= 1;
+                    break;
+                case 1:
+                    playerPos[0] += 1;
+                    break;
+                case 2:
+                    playerPos[1] -= 1;
+                    break;
+                case 3:
+                    playerPos[0] -= 1;
+                    break;
+            }
+            mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("player");
+        }
     };
 });
