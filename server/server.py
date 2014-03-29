@@ -154,7 +154,7 @@ class Game:
         elif t == 'connect':
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
-            message['player'].ws.send(self.packer.pack({'entities': [ self.entities[e].serialize() for e in self.entities ] }), True)
+            message['player'].ws.send(self.packer.pack({'type': 'entities', 'entities': [ self.entities[e].serialize() for e in self.entities ] }), True)
 #            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
             self.server.BroadCastMessage({'type': 'newentity', 'entity': self.entities[eid].serialize()})
             print 'Current entities: ' + str(len(self.entities))

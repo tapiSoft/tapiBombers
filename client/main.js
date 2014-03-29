@@ -89,7 +89,7 @@ require(["domReady", "imageloader", "tile", "input", "map", "entity"], function(
                     break;
                 case 'entities':
                     entities = {}
-                    for(i in message.entities)
+                    for(var i in message.entities)
                     {
                         var e = message.entities[i]
                         entities[e.id] = new Entity(e.x, e.y, e.model);
