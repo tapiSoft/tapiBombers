@@ -4,8 +4,19 @@
 		<meta charset="UTF-8"/>
 		<script type="text/javascript" src="msgpack.js"></script>
 		<script data-main="./main" src="require.js"></script>
+		<style>
+			#gameCanvas, #chatCanvas {
+				position: absolute;
+				z-index: 0;
+			}
+			#chatCanvas {
+				top: 528px;
+				z-index: 1;
+			}
+		</style>
 	</head>
 	<body>
         <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        <canvas id="chatCanvas" width="1280" height="200"></canvas>
 	</body>
 </html>
