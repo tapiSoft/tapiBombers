@@ -1,11 +1,10 @@
-require(["util", "tile"], function(util, Tile)
+require(["util", "tile", "input"], function(util, Tile, input)
 {
 	"use strict";
 
     var canvas = document.getElementById("gameCanvas");
     var ctx = canvas.getContext("2d");
-
-    var mapMatrix = [];
+	input.initInput();
 
 	var ws = new WebSocket("ws://localhost:8000");
 
@@ -24,8 +23,5 @@ require(["util", "tile"], function(util, Tile)
     {
         ctx.drawImage(tileGraphics, 0, 0);
     });
-
-
-
 
 })();
