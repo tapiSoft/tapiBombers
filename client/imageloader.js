@@ -4,8 +4,10 @@ define(function ()
 
     var imageSources = {
         crate: "../gfx/objects/crate.png",
-        sand: "../gfx/objects/sand.png",
-        player: "../gfx/objects/player.png"
+        sand: "../gfx/objects/sand.svg",
+        rock: "../gfx/objects/rock.png",
+        player: "../gfx/objects/player.png",
+        dug: "../gfx/objects/dug.svg"
     };
     var imagesLoaded = 0;
 
