@@ -89,18 +89,18 @@ class Entity:
         if self.moveCooldown > 0.0:
             self.moveCooldown -= dt
 
-        if self.moveCooldown <= 0.0:
+        if self.moveCooldown <= 0.0 and self.game.InBounds(self.x + self.xdir, self.y + self.ydir):
             self.x += self.xdir
             self.y += self.ydir
             print 'Position is now : ' + str(self.x) + "," + str(self.y)
 #            game.outmessages.put({'type': 'move', 'x':, self.x, 'y': self.y})
             self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y})
-            self.moveCooldown = 1.0
+            self.moveCooldown = 0.5
 
 class Game:
     def __init__(self):
-        self.mapheight=100
-        self.mapwidth=100
+        self.mapheight=36
+        self.mapwidth=64
         self.tiles = [[0 for x in xrange(self.mapheight)] for x in xrange(self.mapwidth)]
         self.entities = {}
         self.inmessages = Queue()
@@ -159,6 +159,11 @@ class Game:
         else:
             print 'Unknown packet type: ' + str(message)
 
+    def InBounds(self, x, y):
+        print 'Query with: ' + str(x) + ',' + str(y)
+        ret = x>=0 and y>=0 and x<self.mapwidth and y<self.mapheight
+        print 'Result: ' + str(ret)
+        return ret
 
     def handlePlayerInput(self, message):
         xd = message['xdir']
@@ -178,6 +183,9 @@ class Game:
             else:
                 ent.xdir = 0
                 ent.ydir = -1 
+
+        print 'New xdir: ' + str(ent.xdir)
+        print 'New ydir: ' + str(ent.ydir)
                 
     def CreatePlayerEntity(self):
         eid = self.nextentityid

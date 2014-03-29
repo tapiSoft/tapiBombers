@@ -65,7 +65,6 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
             {
                 chatctx.fillText(chatmessages[chatmessages.length-i], 0, chatcanvas.height-16*i);
             }
-
         };
 
         var handleTapiMessage = function(message)
@@ -81,9 +80,10 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     break;
                 case 'move':
                     map.movePlayerIcon(message.x, message.y);
+                    map.draw(ctx);
                     break;
                 case 'newentity':
-                    entities[message.entityid] = new Entity(message.x, message.y, message.model);
+//                    entities[message.entityid] = new Entity(message.x, message.y, message.model);
                     break;
             }
 
@@ -91,7 +91,6 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
 
         ws.onmessage = function(event)
         {
-			/*
             var arrayBuffer;
             var fileReader = new FileReader();
             fileReader.onload = function() {
@@ -101,31 +100,26 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
-			*/
         };
 
         input.keyDownListeners.right=function()
         {
             changeDirection(1,0);
-            map.draw(ctx);
         }
 
         input.keyDownListeners.down=function()
         {
-            changeDirection(0,-1);
-            map.draw(ctx);
+            changeDirection(0,1);
         }
 
         input.keyDownListeners.left=function()
         {
             changeDirection(-1,0);
-            map.draw(ctx);
         }
 
         input.keyDownListeners.up=function()
         {
-            changeDirection(0,1);
-            map.draw(ctx);
+            changeDirection(0,-1);
         }
 
         var changeDirection=function(xDir, yDir)

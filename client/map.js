@@ -34,9 +34,10 @@ define(["imageloader"], function(imageloader)
         this.movePlayerIcon=function(x,y)
         {
             mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("dug");
-            playerPos[0] = x;
-            playerPos[1] = y;
-            mapMatrix[x][y] = imageloader.getImage("player");
+            playerPos[0] = y;
+            playerPos[1] = x;
+            mapMatrix[y][x] = imageloader.getImage("player");
+//            ctx.drawImage(imageloader.getImage("player"), x*20, y*20, 20, 20);
         }
     };
 });
