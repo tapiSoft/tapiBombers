@@ -6,14 +6,19 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
     var ctx = canvas.getContext("2d");
     var chatcanvas = document.getElementById("chatCanvas");
     var chatctx = chatcanvas.getContext("2d");
-    chatctx.fillstyle = "blue"
-    chatctx.font = "bold 16px Arial"
+    chatctx.fillstyle = "blue";
+    chatctx.font = "bold 16px Arial";
 
-	domready(function ()
-	{
-		fullscreenify(canvas);
-	}, false);
-
+	domready(function() { fullscreenify(canvas); }, false);
+	/*
+	 * fullscreenify()
+	 * Stretch canvas to size of window.
+	 *
+	 * Zachary Johnson
+	 * http://www.zachstronaut.com/
+	 *
+	 * See also: https://gist.github.com/1178522
+	 */
 	function fullscreenify(canvas) {
 		var style = canvas.getAttribute('style') || '';
 		window.addEventListener('resize', function () {resize(canvas);}, false);
@@ -31,7 +36,6 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
 			} else {
 				scale = scale.y + ', ' + scale.y;
 			}
-			console.log("Resizing: " + scale);
 			canvas.setAttribute('style', style + ' ' + '-ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 		}
 	}
@@ -41,7 +45,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
     imageloader.loadImages(function()
     {
         var map = new Map();
-        var chatmessages = []
+        var chatmessages = [];
 
         var ws = new WebSocket("ws://192.168.1.191:8000");
         ws.onopen = function(event)
@@ -50,26 +54,26 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
             var msg = msgpack.encode({type: 'chat', message: "Halloo!"});
             console.log("Sending message " + msg);
             ws.send(msg);
-            ws.send(msgpack.encode({type: 'move', xdir: '1', ydir: '1000' }))
+            ws.send(msgpack.encode({type: 'move', xdir: '1', ydir: '1000' }));
         };
 
         var redrawChatBox = function()
         {
-            chatctx.clearRect(0, 0, chatcanvas.width, chatcanvas.height)
+            chatctx.clearRect(0, 0, chatcanvas.width, chatcanvas.height);
             for(var i = 1; i <= chatmessages.length; ++i)
             {
                 chatctx.fillText(chatmessages[chatmessages.length-i], 0, chatcanvas.height-16*i);
             }
 
-        }
+        };
 
         var handleTapiMessage = function(message)
         {
             switch(message.type)
             {
                 case 'chat':
-                    if(message.sender == undefined)
-                        message.sender = "[SERVER]"
+                    if(message.sender === undefined)
+                        message.sender = "[SERVER]";
                     chatmessages.push(message.sender + ": " + message.message);
                     redrawChatBox();
                     break;
@@ -86,7 +90,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     var msg = msgpack.decode(arrayBuffer);
                     console.log("Received message : " + msg);
                     console.log("chat message : " + msg.message);
-                    handleTapiMessage(msg)
+                    handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
         };
