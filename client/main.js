@@ -56,12 +56,7 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
         {
             map.draw(ctx, entities);
             status.redraw();
-            setTimeout(function()
-            {
-                window.requestAnimFrame(draw);
-            }, 1000/30);
         }
-
 
         var ws = new WebSocket("ws://192.168.1.191:8000");
         ws.onopen = function(event)

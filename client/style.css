@@ -1,10 +1,10 @@
 body {
-    background-image:url('http://www.cs.helsinki.fi/u/ilkkahak/img/crate.png');
+    background-image: url("./img/rock.jpg");
 
 }
 #content {
 
-    background-color: saddlebrown;
+    background-image: url("./img/paper.jpg");
     margin-left: auto;
     margin-right: auto;
     height: 800px;
@@ -12,7 +12,6 @@ body {
 }
 
 #header {
-    background-color: darkred;
     margin-top: 0px;
     margin-left: auto;
     margin-right: auto;
