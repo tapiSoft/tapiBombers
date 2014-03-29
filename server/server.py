@@ -83,10 +83,25 @@ class Entity:
         self.xdir = 0
         self.ydir = 0
         self.moveCooldown = 0.0
+        self.speed = 0.005
         self.game = game
         self.model = model
 
     def tick(self, dt):
+        newx = self.x + self.xdir*self.speed
+        newy = self.y + self.ydir*self.speed
+
+        if self.game.InBounds(newx, newy):
+            self.x = newx
+            self.y = newy
+            if self.moveCooldown > 0.0:
+                self.moveCooldown -= dt
+            else:
+                self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
+                self.moveCooldown = 0.05
+
+        return
+
         if self.moveCooldown > 0.0:
             self.moveCooldown -= dt
 
@@ -166,9 +181,7 @@ class Game:
             print 'Unknown packet type: ' + str(message)
 
     def InBounds(self, x, y):
-        print 'Query with: ' + str(x) + ',' + str(y)
         ret = x>=0 and y>=0 and x<self.mapwidth and y<self.mapheight
-        print 'Result: ' + str(ret)
         return ret
 
     def handlePlayerInput(self, message):
