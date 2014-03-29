@@ -83,22 +83,19 @@ class Entity:
         self.xdir = 0
         self.ydir = 0
         self.moveCooldown = 0.0
-        self.speed = 0.005
+        self.speed = 3
         self.game = game
         self.model = model
 
     def tick(self, dt):
-        newx = self.x + self.xdir*self.speed
-        newy = self.y + self.ydir*self.speed
+        newx = self.x + self.xdir*self.speed*dt
+        newy = self.y + self.ydir*self.speed*dt
 
         if self.game.InBounds(newx, newy):
             self.x = newx
             self.y = newy
-            if self.moveCooldown > 0.0:
-                self.moveCooldown -= dt
-            else:
-                self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
-                self.moveCooldown = 0.05
+            self.game.diffpacket['diff'].append(self.serializePosition())
+#                self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
 
         return
 
@@ -115,6 +112,9 @@ class Entity:
 
     def serialize(self):
         return {'x': self.x, 'y': self.y, 'model': self.model, 'id': self.entityid}
+
+    def serializePosition(self):
+        return {'x': self.x, 'y': self.y, 'id': self.entityid}
 
 class Game:
     def __init__(self):
@@ -147,8 +147,11 @@ class Game:
         except Empty:
             pass
 
+        self.diffpacket={'type': 'diff', 'diff': []}
         for e in self.entities:
             self.entities[e].tick(dt)
+        if self.diffpacket['diff'] != []:
+            self.server.BroadCastMessage(self.diffpacket)
 
 
     def run(self):
@@ -159,7 +162,7 @@ class Game:
             self.lastsimtime = t
             self.tick(dt)
 
-            time.sleep(0.001)
+            time.sleep(0.05)
 
     def handleMessage(self, message):
         print "handling message: " + str(message)

@@ -96,6 +96,14 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                         entities[e.id] = new Entity(e.x, e.y, e.model);
                     }
                     break;
+                case 'diff':
+                    for(var i in message.diff)
+                    {
+                        var e = message.diff[i];
+                        entities[e.id].x = e.x
+                        entities[e.id].y = e.y
+                    }
+                    break;
             }
 
         };
