@@ -50,7 +50,6 @@ class Server(WebSocketServer):
     def HandleChatMessage(self, message, sender):
         self.BroadCastMessage({'type': 'chat', 'message': message, 'sender': sender})
 
-
     def NewConnection(self, client):
         client.playerid = self.nextid
         client.playername = 'Jorma'
@@ -76,13 +75,14 @@ class Server(WebSocketServer):
             self.CloseConnection(self.players[p])
 
 class Entity:
-    def __init__(self, eid):
+    def __init__(self, eid, game):
         self.entityid = eid
         self.x = 0
         self.y = 0
         self.xdir = 0
         self.ydir = 0
         self.moveCooldown = 0.0
+        self.game = game
 
     def tick(self, dt):
         if self.moveCooldown > 0.0:
@@ -92,6 +92,8 @@ class Entity:
             self.x += self.xdir
             self.y += self.ydir
             print 'Position is now : ' + str(self.x) + "," + str(self.y)
+#            game.outmessages.put({'type': 'move', 'x':, self.x, 'y': self.y})
+            self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y})
             self.moveCooldown = 1.0
 
 class Game:
@@ -146,6 +148,8 @@ class Game:
         elif t == 'connect':
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
+#            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
+            self.server.BroadCastMessage({'type': 'newentity', 'x': self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
         elif t == 'disconnect':
             del self.entities[message['player'].entityid]
         else:
