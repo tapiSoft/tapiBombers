@@ -7,10 +7,11 @@ define(function()
     "use strict";
     return function Tile(imagePath, callback)
     {
+        var that = this;
         var graphics = new Image();
         if(callback) graphics.onload = function()
         {
-            callback(this);
+            callback(that);
         };
         graphics.src = imagePath;
 
