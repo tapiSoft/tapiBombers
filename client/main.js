@@ -80,7 +80,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     break;
                 case 'move':
                     map.movePlayerIcon(message.x, message.y);
-                    map.draw(ctx);
+                    map.draw(ctx, entities);
                     break;
                 case 'newentity':
 //                    entities[message.entityid] = new Entity(message.x, message.y, message.model);
@@ -127,6 +127,6 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
             ws.send(msgpack.encode({type: 'move', xdir: xDir, ydir: yDir }));
         }
 
-        map.draw(ctx);
+        map.draw(ctx, entities);
     });
 });

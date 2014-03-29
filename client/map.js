@@ -20,7 +20,7 @@ define(["imageloader"], function(imageloader)
         }
         mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("player");
 
-        this.draw=function(ctx)
+        this.draw=function(ctx, entities)
         {
             for(var i=0; i<mapMatrix.length; ++i)
             {
@@ -29,6 +29,7 @@ define(["imageloader"], function(imageloader)
                     ctx.drawImage(mapMatrix[i][j], j*20, i*20, 20, 20);
                 }
             }
+            
         };
 
         this.movePlayerIcon=function(x,y)
