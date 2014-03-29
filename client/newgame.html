@@ -1,0 +1,15 @@
+<form name="newGameForm">
+    <div class="control-group" ng-class="{error: myForm.name.$invalid && !newGameForm.name.$pristine}">
+        <label>Name</label>
+        <input type="text" name="name" ng-model="game.name" required>
+        <span ng-show="newGameForm.name.$error.required && !newGameForm.name.$pristine" class="help-inline">Required {{newGameForm.name.$pristine}}</span>
+    </div>
+
+    <div class="control-group" ng-class="{error: }">
+
+    </div>
+
+
+</form>
+
+<!-- number of players, private true/false - password, round time, number of matches, voittoperuste,  -->
