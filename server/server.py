@@ -87,7 +87,7 @@ class Entity:
         self.game = game
         self.model = model
 
-    def tick(self, dt):
+    def float_tick(self,dt):
         newx = self.x + self.xdir*self.speed*dt
         newy = self.y + self.ydir*self.speed*dt
 
@@ -95,20 +95,19 @@ class Entity:
             self.x = newx
             self.y = newy
             self.game.diffpacket['diff'].append(self.serializePosition())
-#                self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
 
-        return
-
+    def tick(self, dt):
         if self.moveCooldown > 0.0:
             self.moveCooldown -= dt
 
         if self.moveCooldown <= 0.0 and self.game.InBounds(self.x + self.xdir, self.y + self.ydir):
             self.x += self.xdir
             self.y += self.ydir
-            print 'Position is now : ' + str(self.x) + "," + str(self.y)
+#            print 'Position is now : ' + str(self.x) + "," + str(self.y)
 #            game.outmessages.put({'type': 'move', 'x':, self.x, 'y': self.y})
-            self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
-            self.moveCooldown = 0.5
+            self.game.diffpacket['diff'].append(self.serializePosition())
+#            self.game.server.BroadCastMessage({'type': 'move', 'x': self.x, 'y': self.y, 'entityid': self.entityid})
+            self.moveCooldown = 0.2
 
     def serialize(self):
         return {'x': self.x, 'y': self.y, 'model': self.model, 'id': self.entityid}
