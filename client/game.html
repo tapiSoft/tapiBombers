@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<script type="text/javascript" src="msgpack.js"></script>
+		<script data-main="./main" src="require.js"></script>
+		<style>
+			html, body { margin: 0; padding: 0; }
+			#gameCanvas, #chatCanvas {
+				position: absolute;
+				z-index: 0;
+			}
+			#chatCanvas {
+                bottom: 0px;
+				z-index: 1;
+			}
+		</style>
+	</head>
+	<body>
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        <canvas id="chatCanvas" width="1280" height="120"></canvas>
+	</body>
+</html>
