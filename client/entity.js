@@ -6,5 +6,6 @@ define(function()
 {
     "use strict";
 
-    var weapons;
+    var positionX;
+    var positionY;
 });

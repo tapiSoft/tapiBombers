@@ -64,6 +64,30 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
             fileReader.readAsArrayBuffer(event.data);
         };
 
+        input.keyDownListeners.right=function()
+        {
+            map.movePlayerIcon(0);
+            map.draw(ctx);
+        }
+
+        input.keyDownListeners.down=function()
+        {
+            map.movePlayerIcon(1);
+            map.draw(ctx);
+        }
+
+        input.keyDownListeners.left=function()
+        {
+            map.movePlayerIcon(2);
+            map.draw(ctx);
+        }
+
+        input.keyDownListeners.up=function()
+        {
+            map.movePlayerIcon(3);
+            map.draw(ctx);
+        }
+
         map.draw(ctx);
     });
 });
