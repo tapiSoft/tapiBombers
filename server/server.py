@@ -37,7 +37,7 @@ class PlayerSocket(WebSocketApplication):
                 self.ws.send(message, True)
             except:
                 self.ws.handler.server.CloseConnection(self)
-                print 'Closing socket because of error.'
+                print "Closing socket because of error: ", sys.exc_info()[0]
 
         
 
@@ -169,8 +169,8 @@ class Tile:
         self.durability = durability;
 
     def serialize(self):
-        return self.__dict__
-#        return {'model': self.model, 'durability': self.durability}
+#        return self.__dict__
+        return {'model': self.model} #, 'durability': self.durability}
 
 class Game:
     def __init__(self):
@@ -224,7 +224,7 @@ class Game:
             self.lastsimtime = t
             self.tick(dt)
 
-            time.sleep(0.05)
+#            time.sleep(0.05)
 
     def handleMessage(self, message):
         print "handling message: " + str(message)
@@ -237,15 +237,16 @@ class Game:
             message['player'].SendMessage(self.packer.pack({'type': 'entities', 'entities': [ self.entities[e].serialize() for e in self.entities ] }))
 
             serializedtiles = []
+            tilemessage = {'type': 'tiles', 'tiles': []}
             for x in xrange(self.mapwidth):
                 tmp = []
                 for y in xrange(self.mapheight):
                     tmp.append(self.tiles[x][y].serialize())
-                serializedtiles.append(tmp)
-            tilemessage = {'type': 'tiles', 'tiles': serializedtiles}
+                tilemessage['tiles'] = tmp
+                message['player'].SendMessage(self.packer.pack(tilemessage))
+                
 #            print 'Sending TrolloMEsssage: ' + str(tilemessage)
 
-            message['player'].SendMessage(self.packer.pack(tilemessage))
 #            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
             self.server.BroadCastMessage({'type': 'newentity', 'entity': self.entities[eid].serialize()})
             print 'Current entities: ' + str(len(self.entities))

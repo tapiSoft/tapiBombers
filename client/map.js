@@ -12,7 +12,7 @@ define(["imageloader"], function(imageloader)
             {
                 for(var j=0; j<mapMatrix[i].length; ++j)
                 {
-                    ctx.drawImage(mapMatrix[i][j], j*20, i*20, 20, 20);
+                    ctx.drawImage(mapMatrix[i][j], i*20, j*20, 20, 20);
                 }
             }
             for(var i in entities)
@@ -26,10 +26,10 @@ define(["imageloader"], function(imageloader)
         this.initializeMap = function(width, height)
         {
             mapMatrix = [];
-            for(var i = 0; i < height; ++i)
+            for(var i = 0; i < width; ++i)
             {
                 var tmp = [];
-                for(var j = 0; j < width; ++j)
+                for(var j = 0; j < height; ++j)
                     tmp.push(0);
                 mapMatrix.push(tmp);
             }
@@ -38,6 +38,11 @@ define(["imageloader"], function(imageloader)
         this.setTile = function(x, y, model, durability)
         {
             mapMatrix[y][x] = imageloader.getImage(model);
+        }
+
+        this.appendRow = function(row)
+        {
+            mapMatrix.push(row);
         }
     };
 });

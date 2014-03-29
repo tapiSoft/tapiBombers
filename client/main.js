@@ -96,15 +96,19 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                     }
                     break;
                 case 'tiles':
-                    var width = message.tiles.length;
-                    var height = message.tiles[0].length;
-                    map.initializeMap(width, height);
-                    for(var x = 0; x < width; ++x)
+//                    var width = message.tiles.length;
+//                    var height = message.tiles[0].length;
+                    var tmp = []
+                    for(var x = 0; x < message.tiles.length; ++x)
+                        tmp.push(imageloader.getImage(message.tiles[x].model));
+                    map.appendRow(tmp);
+                        
+/*                    for(var x = 0; x < width; ++x)
                         for(var y = 0; y < height; ++y)
                         {
                             var t = message.tiles[x][y];
                             map.setTile(x,y,t.model)
-                        }
+                        }*/
                     break;
                 case 'diff':
                     for(var i in message.diff)
@@ -139,6 +143,7 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                     handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
+            console.log("Packet size was : " + event.data.size);
         };
 
         input.keyDownListeners.right=function()
