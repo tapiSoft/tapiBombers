@@ -23,7 +23,7 @@ class PlayerSocket(WebSocketApplication):
         except:
             pass # getting weird None-messages for some reason which cause exceptions
         for unpacked in self.unpacker:
-            print "Unpacekd message : " + str(unpacked)
+#            print "Unpacekd message : " + str(unpacked)
             self.ws.handler.server.HandleMessage(unpacked, self)
 
     def on_close(self, reason):
@@ -60,11 +60,12 @@ class Server(WebSocketServer):
 
     def CloseConnection(self, client):
         del self.players[client.playerid]
+        self.game.inmessages.put({'type': 'disconnect', 'player': client})
         self.BroadCastMessage({'type': 'chat', 'message': client.playername + ' disconnected.'})
 
     def BroadCastMessage(self, message):
         msg = self.packer.pack(message)
-        print "Packed: " + str(msg)
+#        print "Packed: " + str(msg)
         disconnectedplayers = []
         for p in self.players:
             try:
@@ -149,9 +150,12 @@ class Game:
             eid = self.CreatePlayerEntity()
             message['player'].entityid = eid
 #            game.outmessages.put({'type': 'newentity', 'x':, self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
-            self.server.BroadCastMessage({'type': 'newentity', 'x': self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player'})
+            self.server.BroadCastMessage({'type': 'newentity', 'x': self.entities[eid].x, 'y': self.entities[eid].y, 'model': 'player', 'entityid': eid})
+            print 'Current entities: ' + str(len(self.entities))
         elif t == 'disconnect':
-            del self.entities[message['player'].entityid]
+            eid = message['player'].entityid
+            del self.entities[eid]
+            self.server.BroadCastMessage({'type': 'deleteentity', 'entityid': eid})
         else:
             print 'Unknown packet type: ' + str(message)
 
@@ -178,7 +182,7 @@ class Game:
     def CreatePlayerEntity(self):
         eid = self.nextentityid
         self.nextentityid += 1
-        self.entities[eid] = Entity(eid)
+        self.entities[eid] = Entity(eid, self)
         return eid
 
 

@@ -70,6 +70,7 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
 
         var handleTapiMessage = function(message)
         {
+            console.log("Received tapimessage of type: " + message.type)
             switch(message.type)
             {
                 case 'chat':
@@ -96,7 +97,6 @@ require(["domReady", "imageloader", "tile", "input", "map"], function(domready, 
                     arrayBuffer = this.result;
                     var msg = msgpack.decode(arrayBuffer);
                     console.log("Received message : " + msg);
-                    console.log("chat message : " + msg.message);
                     handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
