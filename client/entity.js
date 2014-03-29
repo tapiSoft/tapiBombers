@@ -11,5 +11,5 @@ define(function()
         this.x = posX;
         this.y = posY;
         this.model = model;
-    }
+    };
 });

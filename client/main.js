@@ -1,13 +1,10 @@
-require(["domReady", "imageloader", "tile", "input", "map", "entity"], function(domready, imageloader, Tile, input, Map, Entity)
+require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "entity"], function(domready, imageloader, Tile, input, Map, StatusWindow, Entity)
 {
 	"use strict";
 
     var canvas = document.getElementById("gameCanvas");
     var ctx = canvas.getContext("2d");
-    var chatcanvas = document.getElementById("chatCanvas");
-    var chatctx = chatcanvas.getContext("2d");
-    chatctx.fillstyle = "blue";
-    chatctx.font = "bold 16px Arial";
+	var status = new StatusWindow();
 
     domready(function() { fullscreenify(canvas); }, false);
     /*
@@ -45,7 +42,6 @@ require(["domReady", "imageloader", "tile", "input", "map", "entity"], function(
     imageloader.loadImages(function()
     {
         var map = new Map();
-        var chatmessages = [];
         var entities = {};
 
         var ws = new WebSocket("ws://192.168.1.191:8000");
@@ -58,25 +54,16 @@ require(["domReady", "imageloader", "tile", "input", "map", "entity"], function(
             ws.send(msgpack.encode({type: 'move', xdir: '1', ydir: '1000' }));
         };
 
-        var redrawChatBox = function()
-        {
-            chatctx.clearRect(0, 0, chatcanvas.width, chatcanvas.height);
-            for(var i = 1; i <= chatmessages.length; ++i)
-            {
-                chatctx.fillText(chatmessages[chatmessages.length-i], 0, chatcanvas.height-16*i);
-            }
-        };
-
         var handleTapiMessage = function(message)
         {
-            console.log("Received tapimessage of type: " + message.type)
+            console.log("Received tapimessage of type: " + message.type);
             switch(message.type)
             {
                 case 'chat':
                     if(message.sender === undefined)
                         message.sender = "[SERVER]";
-                    chatmessages.push(message.sender + ": " + message.message);
-                    redrawChatBox();
+                    status.addMessage(message);
+                    status.redraw();
                     break;
                 case 'move':
                     entities[message.entityid].x = message.x;
@@ -84,14 +71,14 @@ require(["domReady", "imageloader", "tile", "input", "map", "entity"], function(
                     map.draw(ctx, entities);
                     break;
                 case 'newentity':
-                    var e = message.entity
+                    var e = message.entity;
                     entities[e.id] = new Entity(e.x, e.y, e.model);
                     break;
                 case 'entities':
-                    entities = {}
+                    entities = {};
                     for(var i in message.entities)
                     {
-                        var e = message.entities[i]
+                        var e = message.entities[i];
                         entities[e.id] = new Entity(e.x, e.y, e.model);
                     }
                     break;

@@ -30,7 +30,6 @@ define(["imageloader"], function(imageloader)
                 var img = imageloader.getImage(e.model);
                 ctx.drawImage(img, e.x*20, e.y*20, 20, 20);
             }
-            
         };
     };
 });
