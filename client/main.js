@@ -5,7 +5,7 @@ require(["imageloader", "tile", "input", "map"], function(imageloader, Tile, inp
     var canvas = document.getElementById("gameCanvas");
     var ctx = canvas.getContext("2d");
 
-	input.initInput();
+    input.initInput();
 
     imageloader.loadImages(function()
     {
