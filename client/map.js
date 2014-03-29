@@ -33,7 +33,7 @@ define(["imageloader"], function(imageloader)
 
         this.movePlayerIcon=function(x,y)
         {
-            mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("sand");
+            mapMatrix[playerPos[0]][playerPos[1]] = imageloader.getImage("dug");
             playerPos[0] = x;
             playerPos[1] = y;
             mapMatrix[x][y] = imageloader.getImage("player");
