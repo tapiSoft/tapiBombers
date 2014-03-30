@@ -5,6 +5,8 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
     var canvas = document.getElementById("gameCanvas");
     var ctx = canvas.getContext("2d");
 	var status = new StatusWindow();
+	var chatActivated = false;
+	var chatMessage="";
 
     window.requestAnimFrame = (function(callback) {
         return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
@@ -143,7 +145,7 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
                     handleTapiMessage(msg);
             };
             fileReader.readAsArrayBuffer(event.data);
-            console.log("Packet size was : " + event.data.size);
+            //console.log("Packet size was : " + event.data.size);
         };
 
         input.keyDownListeners.right=function()
@@ -165,6 +167,21 @@ require(["domReady", "imageloader", "tile", "input", "map", "statuswindow", "ent
         {
             changeDirection(0,-1);
         };
+
+		input.keyDownListeners.enter=function()
+		{
+			if(chatActivated)
+			{
+				var msg = msgpack.encode({type: 'chat', message: chatMessage});
+				ws.send(msg);
+				chatMessage="";
+			}
+			chatActivated=!chatActivated;
+		};
+		addEventListener("keydown", function(e)
+		{
+			chatMessage += String.fromCharCode(e.charCode);
+		});
 
         var changeDirection=function(xDir, yDir)
         {

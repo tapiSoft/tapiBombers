@@ -1,19 +1,21 @@
 define(function()
 {
 	"use strict";
-	var NYIfunc=function() { console.log("NYI"); };
+	var NYIfunc=function() {};
 	var obj = {
 		keyDownListeners: {
 			up: NYIfunc,
 			down: NYIfunc,
 			left: NYIfunc,
-			right: NYIfunc
+			right: NYIfunc,
+			enter: NYIfunc
 		},
 		keyUpListeners: {
 			up: NYIfunc,
 			down: NYIfunc,
 			left: NYIfunc,
-			right: NYIfunc
+			right: NYIfunc,
+			enter: NYIfunc
 		},
 		initInput: function()
 		{
@@ -22,6 +24,7 @@ define(function()
 				var keyCode = e.keyCode ? e.keyCode : e.which;
 				switch(keyCode)
 				{
+					case 13: e.preventDefault(); obj.keyDownListeners.enter(); break;
 					case 37: e.preventDefault(); obj.keyDownListeners.left(); break;
 					case 38: e.preventDefault(); obj.keyDownListeners.up(); break;
 					case 39: e.preventDefault(); obj.keyDownListeners.right(); break;
@@ -33,6 +36,7 @@ define(function()
 				var keyCode = e.keyCode ? e.keyCode : e.which;
 				switch(keyCode)
 				{
+					case 13: e.preventDefault(); obj.keyUpListeners.enter(); break;
 					case 37: e.preventDefault(); obj.keyUpListeners.left(); break;
 					case 38: e.preventDefault(); obj.keyUpListeners.up(); break;
 					case 39: e.preventDefault(); obj.keyUpListeners.right(); break;
