@@ -1,14 +1,28 @@
-body {
-    background-image: url("./img/rock.jpg");
-
+body
+{
+	background: url('img/stone.jpg') no-repeat center 0;
+	background-color:#000000;
 }
-#content {
 
-    background-image: url("./img/paper.jpg");
+#top-image {
+    padding: 0;
+    margin: 0;
+    background-image: url('img/top-image.png');  
     margin-left: auto;
     margin-right: auto;
+    width: 1014px;
+    height: 157px
+}
+
+#content {
+    padding: 0;
+    margin-top: -32px;
+    background-image: url("./img/content-back.png");
+    margin-left: auto;
+    margin-right: auto;
+    background-repeat: repeat-y;
     height: 800px;
-    width: 1024px;
+    width: 989px;
 }
 
 #header {
